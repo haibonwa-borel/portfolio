@@ -1,15 +1,20 @@
-// Navigation mobile (réutilisé)
+// ============================================
+// PROJECTS PAGE – DYNAMIC GITHUB FETCHING
+// ============================================
+
+const GITHUB_USERNAME = 'haibonwa-borel';
+
+// ---- Mobile Navigation ----
 document.addEventListener('DOMContentLoaded', function() {
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
-    
+
     if (hamburger && navMenu) {
         hamburger.addEventListener('click', function() {
             hamburger.classList.toggle('active');
             navMenu.classList.toggle('active');
         });
-        
-        // Fermer le menu mobile lors du clic sur un lien
+
         document.querySelectorAll('.nav-link').forEach(n => n.addEventListener('click', () => {
             hamburger.classList.remove('active');
             navMenu.classList.remove('active');
@@ -17,304 +22,242 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Animation de la navbar au scroll
+// ---- Navbar scroll ----
 window.addEventListener('scroll', function() {
     const navbar = document.querySelector('.navbar');
     if (window.scrollY > 50) {
-        navbar.style.background = 'rgba(255, 255, 255, 0.98)';
-        navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+        navbar.style.background = 'rgba(7,7,13,0.95)';
     } else {
-        navbar.style.background = 'rgba(255, 255, 255, 0.95)';
-        navbar.style.boxShadow = 'none';
+        navbar.style.background = 'rgba(7,7,13,0.75)';
     }
 });
 
-// Système de filtrage des projets
+// ---- Language colors (GitHub-style) ----
+const LANG_COLORS = {
+    'JavaScript': '#f1e05a',
+    'TypeScript': '#3178c6',
+    'Python': '#3572A5',
+    'HTML': '#e34c26',
+    'CSS': '#663399',
+    'Dart': '#00B4AB',
+    'PHP': '#4F5D95',
+    'Java': '#b07219',
+    'C++': '#f34b7d',
+    'C#': '#178600',
+    'Swift': '#F05138',
+    'Kotlin': '#A97BFF',
+    'PowerShell': '#012456',
+    'Shell': '#89e051',
+    'Ruby': '#701516',
+    'Go': '#00ADD8',
+};
+
+// ---- Category detection ----
+function getProjectCategory(repo) {
+    const lang = (repo.language || '').toLowerCase();
+    const topics = (repo.topics || []).map(t => t.toLowerCase());
+
+    const mobileLangs = ['dart', 'swift', 'kotlin'];
+    const mobileTopics = ['mobile', 'flutter', 'react-native', 'android', 'ios'];
+
+    if (mobileLangs.includes(lang) || mobileTopics.some(t => topics.includes(t))) {
+        return 'mobile';
+    }
+
+    const fullstackTopics = ['fullstack', 'full-stack'];
+    if (fullstackTopics.some(t => topics.includes(t))) {
+        return 'fullstack';
+    }
+
+    return 'web';
+}
+
+// ---- Generate gradient backgrounds based on language ----
+function getCardGradient(language) {
+    const gradients = {
+        'JavaScript': 'linear-gradient(135deg, #1a1a2e 0%, #2d1b4e 100%)',
+        'Python': 'linear-gradient(135deg, #1a1a2e 0%, #1b3a4e 100%)',
+        'HTML': 'linear-gradient(135deg, #1a1a2e 0%, #4e1b1b 100%)',
+        'CSS': 'linear-gradient(135deg, #1a1a2e 0%, #2e1b4e 100%)',
+        'PHP': 'linear-gradient(135deg, #1a1a2e 0%, #1b2e4e 100%)',
+        'Dart': 'linear-gradient(135deg, #1a1a2e 0%, #1b4e4a 100%)',
+        'PowerShell': 'linear-gradient(135deg, #1a1a2e 0%, #1b2040 100%)',
+    };
+    return gradients[language] || 'linear-gradient(135deg, #1a1a2e 0%, #2e2e3e 100%)';
+}
+
+// ---- Create project card ----
+function createProjectCard(repo) {
+    const category = getProjectCategory(repo);
+    const description = repo.description || 'Aucune description disponible.';
+    const truncatedDesc = description.length > 130 ? description.substring(0, 127) + '...' : description;
+
+    let tags = [];
+    if (repo.language) tags.push(repo.language);
+    if (repo.topics) tags = [...tags, ...repo.topics.filter(t => t !== repo.language?.toLowerCase())];
+    tags = tags.slice(0, 4);
+
+    const tagsHtml = tags.map(tag => `<span class="tech-tag">${tag}</span>`).join('');
+    const langColor = LANG_COLORS[repo.language] || '#00e88f';
+
+    const div = document.createElement('div');
+    div.className = 'project-card';
+    div.setAttribute('data-category', category);
+
+    div.innerHTML = `
+        <div class="project-image" style="background: ${getCardGradient(repo.language)}; display: flex; align-items: center; justify-content: center;">
+            <div style="text-align: center; padding: 1.5rem;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem; opacity: 0.6;">
+                    ${repo.language === 'HTML' ? '🌐' : repo.language === 'Python' ? '🐍' : repo.language === 'JavaScript' ? '⚡' : repo.language === 'PHP' ? '🐘' : repo.language === 'Dart' ? '🎯' : '💻'}
+                </div>
+                <div style="font-family: var(--font-mono); font-size: 0.8rem; color: ${langColor}; opacity: 0.8;">
+                    ${repo.language || 'N/A'}
+                </div>
+            </div>
+            <div class="project-overlay">
+                <div class="project-links">
+                    <a href="${repo.html_url}" class="project-link" target="_blank" rel="noopener noreferrer">
+                        <span>GitHub</span>
+                    </a>
+                    ${repo.homepage ? `
+                    <a href="${repo.homepage}" class="project-link" target="_blank" rel="noopener noreferrer">
+                        <span>Demo</span>
+                    </a>` : ''}
+                </div>
+            </div>
+        </div>
+        <div class="project-content">
+            <h3 class="project-title">${repo.name.replace(/[-_]/g, ' ')}</h3>
+            <p class="project-description">${truncatedDesc}</p>
+            <div class="project-tech">
+                ${tagsHtml}
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 0.8rem; font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-3);">
+                ${repo.stargazers_count > 0 ? `<span>⭐ ${repo.stargazers_count}</span>` : ''}
+                ${repo.forks_count > 0 ? `<span>🔀 ${repo.forks_count}</span>` : ''}
+                <span style="margin-left: auto;">${new Date(repo.updated_at).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' })}</span>
+            </div>
+        </div>
+    `;
+
+    return div;
+}
+
+// ---- Fetch & render projects ----
+async function fetchGitHubProjects() {
+    const grid = document.getElementById('projects-grid');
+    if (!grid) return;
+
+    try {
+        const response = await fetch(`https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=30`, {
+            headers: { 'Accept': 'application/vnd.github.mercy-preview+json' }
+        });
+
+        if (!response.ok) throw new Error(`GitHub API Error: ${response.status}`);
+
+        const repos = await response.json();
+        grid.innerHTML = '';
+
+        if (repos.length === 0) {
+            grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-2); padding: 4rem 0;">Aucun projet trouvé.</p>';
+            return;
+        }
+
+        repos.forEach((repo, index) => {
+            const card = createProjectCard(repo);
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            grid.appendChild(card);
+
+            // Staggered reveal
+            setTimeout(() => {
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 80);
+        });
+
+        // Init filters after loading
+        setTimeout(() => {
+            initProjectFilter();
+            initProjectHoverEffects();
+        }, repos.length * 80 + 200);
+
+    } catch (error) {
+        console.error('GitHub fetch error:', error);
+        grid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; color: var(--text-2); padding: 4rem 0;">
+                <p style="margin-bottom: 1rem;">Impossible de charger les projets depuis GitHub.</p>
+                <button onclick="fetchGitHubProjects()" class="filter-btn" style="cursor: pointer;">Réessayer</button>
+            </div>
+        `;
+    }
+}
+
+// ---- Project filter ----
 function initProjectFilter() {
     const filterButtons = document.querySelectorAll('.filter-btn');
     const projectCards = document.querySelectorAll('.project-card');
-    
+
     filterButtons.forEach(button => {
         button.addEventListener('click', () => {
-            // Retirer la classe active de tous les boutons
             filterButtons.forEach(btn => btn.classList.remove('active'));
-            // Ajouter la classe active au bouton cliqué
             button.classList.add('active');
-            
+
             const filterValue = button.getAttribute('data-filter');
-            
+
             projectCards.forEach(card => {
                 const cardCategory = card.getAttribute('data-category');
-                
+
                 if (filterValue === 'all' || cardCategory === filterValue) {
-                    // Afficher la carte avec animation
-                    gsap.to(card, {
-                        duration: 0.5,
-                        opacity: 1,
-                        scale: 1,
-                        display: 'block',
-                        ease: 'power2.out'
-                    });
+                    card.style.display = 'block';
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 50);
                 } else {
-                    // Masquer la carte avec animation
-                    gsap.to(card, {
-                        duration: 0.3,
-                        opacity: 0,
-                        scale: 0.8,
-                        ease: 'power2.in',
-                        onComplete: () => {
-                            card.style.display = 'none';
-                        }
-                    });
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        card.style.display = 'none';
+                    }, 300);
                 }
             });
         });
     });
 }
 
-// Animations d'entrée pour les cartes de projets
-function initProjectAnimations() {
-    // Animation d'entrée pour le titre de la page
-    gsap.from('.page-title', {
-        duration: 1,
-        y: 50,
-        opacity: 0,
-        ease: 'power3.out'
-    });
-    
-    gsap.from('.page-subtitle', {
-        duration: 1,
-        y: 30,
-        opacity: 0,
-        ease: 'power3.out',
-        delay: 0.2
-    });
-    
-    // Animation d'entrée pour les boutons de filtre
-    gsap.from('.filter-btn', {
-        duration: 0.6,
-        y: 20,
-        opacity: 0,
-        stagger: 0.1,
-        ease: 'power3.out',
-        delay: 0.4
-    });
-    
-    // Animation d'entrée pour les cartes de projets
-    gsap.from('.project-card', {
-        duration: 0.8,
-        y: 50,
-        opacity: 0,
-        stagger: 0.15,
-        ease: 'power3.out',
-        delay: 0.6
-    });
-}
-
-// Effet de parallax sur les images de projets
-function initProjectParallax() {
-    const projectImages = document.querySelectorAll('.project-image img');
-    
-    window.addEventListener('scroll', () => {
-        projectImages.forEach(img => {
-            const rect = img.getBoundingClientRect();
-            const speed = 0.1;
-            
-            if (rect.top < window.innerHeight && rect.bottom > 0) {
-                const yPos = -(window.pageYOffset - rect.top) * speed;
-                img.style.transform = `translateY(${yPos}px)`;
-            }
-        });
-    });
-}
-
-// Animation au survol des cartes de projets
+// ---- Hover effects ----
 function initProjectHoverEffects() {
     const projectCards = document.querySelectorAll('.project-card');
-    
+
     projectCards.forEach(card => {
-        const image = card.querySelector('.project-image img');
-        const overlay = card.querySelector('.project-overlay');
-        const links = card.querySelectorAll('.project-link');
-        
         card.addEventListener('mouseenter', () => {
-            gsap.to(image, {
-                duration: 0.3,
-                scale: 1.1,
-                ease: 'power2.out'
-            });
-            
-            gsap.to(overlay, {
-                duration: 0.3,
-                opacity: 1,
-                ease: 'power2.out'
-            });
-            
-            gsap.from(links, {
-                duration: 0.4,
-                y: 20,
-                opacity: 0,
-                stagger: 0.1,
-                ease: 'power2.out',
-                delay: 0.1
-            });
+            const overlay = card.querySelector('.project-overlay');
+            if (overlay) overlay.style.opacity = '1';
         });
-        
+
         card.addEventListener('mouseleave', () => {
-            gsap.to(image, {
-                duration: 0.3,
-                scale: 1,
-                ease: 'power2.out'
-            });
-            
-            gsap.to(overlay, {
-                duration: 0.3,
-                opacity: 0,
-                ease: 'power2.out'
-            });
+            const overlay = card.querySelector('.project-overlay');
+            if (overlay) overlay.style.opacity = '0';
         });
     });
 }
 
-// Animation des tags de technologies
-function initTechTagsAnimation() {
-    const techTags = document.querySelectorAll('.tech-tag');
-    
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                gsap.from(entry.target, {
-                    duration: 0.5,
-                    scale: 0,
-                    opacity: 0,
-                    ease: 'back.out(1.7)',
-                    delay: Math.random() * 0.3
-                });
-                observer.unobserve(entry.target);
-            }
-        });
-    });
-    
-    techTags.forEach(tag => observer.observe(tag));
+// ---- Page animations ----
+function initPageAnimations() {
+    if (typeof gsap === 'undefined') return;
+
+    gsap.from('.page-title', { duration: 0.8, y: 40, opacity: 0, ease: 'power3.out' });
+    gsap.from('.page-subtitle', { duration: 0.8, y: 25, opacity: 0, ease: 'power3.out', delay: 0.15 });
+    gsap.from('.filter-btn', { duration: 0.5, y: 15, opacity: 0, stagger: 0.08, ease: 'power3.out', delay: 0.3 });
 }
 
-// Smooth scroll pour les liens d'ancrage
-function initSmoothScroll() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        });
-    });
-}
-
-// Effet de révélation au scroll
-function initScrollReveal() {
-    const revealElements = document.querySelectorAll('.project-card, .filter-btn');
-    
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('revealed');
-            }
-        });
-    }, {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    });
-    
-    revealElements.forEach(element => observer.observe(element));
-}
-
-// Gestion des liens de projets
-function initProjectLinks() {
-    const projectLinks = document.querySelectorAll('.project-link');
-    
-    projectLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            
-            // Animation de clic
-            gsap.to(link, {
-                duration: 0.1,
-                scale: 0.95,
-                yoyo: true,
-                repeat: 1,
-                ease: 'power2.inOut'
-            });
-            
-            // Simulation d'ouverture de lien
-            setTimeout(() => {
-                const linkText = link.textContent.trim();
-                if (linkText === 'GitHub') {
-                    alert('Redirection vers le repository GitHub du projet');
-                } else if (linkText === 'Demo') {
-                    alert('Ouverture de la démonstration du projet');
-                }
-            }, 200);
-        });
-    });
-}
-
-// Animation de chargement de la page
-function initPageLoader() {
-    // Masquer tous les éléments initialement
-    gsap.set('.projects-hero, .projects-section', { opacity: 0 });
-    
-    // Animation de révélation progressive
-    const tl = gsap.timeline();
-    
-    tl.to('.projects-hero', {
-        duration: 0.8,
-        opacity: 1,
-        ease: 'power2.out'
-    })
-    .to('.projects-section', {
-        duration: 0.8,
-        opacity: 1,
-        ease: 'power2.out'
-    }, '-=0.4');
-}
-
-// Initialisation de tous les scripts
+// ---- Init ----
 document.addEventListener('DOMContentLoaded', function() {
-    // Vérifier si GSAP est disponible
-    if (typeof gsap !== 'undefined') {
-        initProjectAnimations();
-        initProjectHoverEffects();
-        initTechTagsAnimation();
-        initPageLoader();
-    }
-    
-    initProjectFilter();
-    initProjectParallax();
-    initSmoothScroll();
-    initScrollReveal();
-    initProjectLinks();
-    
-    // Ajout d'une classe pour les animations CSS
-    document.body.classList.add('loaded');
+    initPageAnimations();
+    fetchGitHubProjects();
 });
-
-// Gestion des erreurs
-window.addEventListener('error', function(e) {
-    if (e.message.includes('gsap')) {
-        console.log('GSAP non disponible, utilisation des animations CSS uniquement');
-    }
-});
-
-// Animation de sortie de page
-window.addEventListener('beforeunload', function() {
-    gsap.to('body', {
-        duration: 0.3,
-        opacity: 0,
-        ease: 'power2.in'
-    });
-});
-

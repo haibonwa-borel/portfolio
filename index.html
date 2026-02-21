@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio - Étudiant Développeur</title>
+    <title>HAIBONWA RIBEGA Borel – Développeur Web, Mobile & IA</title>
+    <meta name="description" content="Portfolio de HAIBONWA RIBEGA Borel – Développeur full stack web, mobile et intelligence artificielle basé à Yaoundé, Cameroun.">
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
@@ -14,17 +14,17 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
-                <span class="logo-text">Portfolio</span>
+                <span class="logo-text">&lt;HB/&gt;</span>
             </div>
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a href="#home" class="nav-link">Accueil</a>
+                    <a href="#home" class="nav-link active">Accueil</a>
                 </li>
                 <li class="nav-item">
                     <a href="#about" class="nav-link">À propos</a>
                 </li>
                 <li class="nav-item">
-                    <a href="#stats" class="nav-link">Statistiques</a>
+                    <a href="#stats" class="nav-link">Stats</a>
                 </li>
                 <li class="nav-item">
                     <a href="projects.html" class="nav-link">Projets</a>
@@ -40,22 +40,28 @@
             </div>
         </div>
     </nav>
+
     <!-- Hero Section -->
     <section id="home" class="hero">
         <div class="hero-container">
             <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="badge-dot"></span>
+                    Disponible pour un stage / freelance
+                </div>
                 <h1 class="hero-title">
-                    <span class="title-line">Bonjour, je suis HAIBONWA RIBEGA</span>
+                    <span class="title-line">Développeur Full Stack & IA</span>
                     <span class="title-name">HAIBONWA RIBEGA Borel</span>
                 </h1>
                 <p class="hero-subtitle">
-                    Étudiant en informatique à Keyce Informatique Cameroun, 
-                    passionné par le développement d'applications modernes et interactives.
+                    Je conçois des applications web et mobiles modernes, et j'explore 
+                    l'intelligence artificielle pour créer des solutions qui ont un impact réel. 
+                    Étudiant à <strong>Keyce Informatique Cameroun</strong>.
                 </p>
                 <div class="hero-buttons">
-                    <a href="projects.html" class="btn btn-primary">Voir mes projets</a>
+                    <a href="projects.html" class="btn btn-primary">Voir mes projets →</a>
                     <a href="#contact" class="btn btn-secondary">Me contacter</a>
-                    <a href="" class="btn btn-primary">Telecharger mon cv</a>
+                    <a href="HAIBONWA CV.docx" class="btn btn-secondary" download>Télécharger mon CV</a>
                 </div>
             </div>
             <div class="hero-visual">
@@ -68,12 +74,14 @@
     </section>
 
     <!-- About Section -->
-    <section id="about" class="about code-bg">
+    <section id="about" class="about">
         <div class="container">
-            <h2 class="section-title">À propos de moi</h2>
+            <h2 class="section-title">Qui suis-je ?</h2>
+            <p class="section-subtitle">
+                Un passionné qui transforme des idées en expériences numériques.
+            </p>
             <div class="about-content">
                 <div class="about-image">
-                    <!-- Remplacez cette div par votre photo -->
                     <div class="profile-photo-container">
                         <img src="20250119_224901.jpg" alt="HAIBONWA RIBEGA Borel" class="profile-photo">
                         <div class="photo-glitch-effect"></div>
@@ -81,48 +89,75 @@
                 </div>
                 <div class="about-text">
                     <p>
-                        Je suis étudiant en informatique spécialisé en développement web et mobile 
-                        à Keyce Informatique Cameroun. Passionné par les nouvelles technologies, 
-                        j'aime créer des expériences utilisateur modernes et intuitives.
+                        Je suis <span class="highlight">HAIBONWA RIBEGA Borel</span>, étudiant en informatique à 
+                        <span class="highlight">Keyce Informatique Cameroun</span>. Mon parcours m'a amené à explorer 
+                        le développement web full stack, le mobile, et l'intelligence artificielle — trois domaines 
+                        qui convergent pour construire les applications de demain.
                     </p>
                     <p>
-                        Mon expertise couvre le développement front-end avec des technologies comme 
-                        HTML5, CSS3, JavaScript, React, ainsi que le développement mobile avec 
-                        React Native et Flutter.
+                        Côté <span class="highlight">web</span>, je maîtrise HTML5, CSS3, JavaScript, React, et Node.js. 
+                        En <span class="highlight">mobile</span>, je travaille avec Flutter et React Native pour créer 
+                        des expériences fluides sur toutes les plateformes. Et en <span class="highlight">IA</span>, 
+                        j'applique le deep learning et le machine learning avec Python pour résoudre des problèmes concrets.
+                    </p>
+                    <p>
+                        Mon objectif : combiner design, code et intelligence pour livrer des produits 
+                        qui font la différence.
                     </p>
                     <div class="skills">
                         <div class="skill-item">
-                            <span class="skill-name">HTML/CSS</span>
+                            <div class="skill-header">
+                                <span class="skill-name">HTML / CSS / JavaScript</span>
+                                <span class="skill-percentage">90%</span>
+                            </div>
                             <div class="skill-bar">
                                 <div class="skill-progress" data-width="90%"></div>
                             </div>
                         </div>
                         <div class="skill-item">
-                            <span class="skill-name">JavaScript</span>
-                            <div class="skill-bar">
-                                <div class="skill-progress" data-width="85%"></div>
+                            <div class="skill-header">
+                                <span class="skill-name">React / React Native</span>
+                                <span class="skill-percentage">80%</span>
                             </div>
-                        </div>
-                        <div class="skill-item">
-                            <span class="skill-name">React</span>
                             <div class="skill-bar">
                                 <div class="skill-progress" data-width="80%"></div>
                             </div>
                         </div>
                         <div class="skill-item">
-                            <span class="skill-name">React Native</span>
+                            <div class="skill-header">
+                                <span class="skill-name">Flutter / Dart</span>
+                                <span class="skill-percentage">75%</span>
+                            </div>
                             <div class="skill-bar">
                                 <div class="skill-progress" data-width="75%"></div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="about-image">
-                    <div class="image-placeholder">
-                        <div class="floating-elements">
-                            <div class="floating-element"></div>
-                            <div class="floating-element"></div>
-                            <div class="floating-element"></div>
+                        <div class="skill-item">
+                            <div class="skill-header">
+                                <span class="skill-name">Python / Machine Learning</span>
+                                <span class="skill-percentage">75%</span>
+                            </div>
+                            <div class="skill-bar">
+                                <div class="skill-progress" data-width="75%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-header">
+                                <span class="skill-name">Java & C++ (POO)</span>
+                                <span class="skill-percentage">70%</span>
+                            </div>
+                            <div class="skill-bar">
+                                <div class="skill-progress" data-width="70%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <div class="skill-header">
+                                <span class="skill-name">PHP / MySQL</span>
+                                <span class="skill-percentage">70%</span>
+                            </div>
+                            <div class="skill-bar">
+                                <div class="skill-progress" data-width="70%"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -133,61 +168,63 @@
     <!-- Statistics Section -->
     <section id="stats" class="stats">
         <div class="container">
-            <h2 class="section-title">Mes statistiques</h2>
+            <h2 class="section-title">En chiffres</h2>
+            <p class="section-subtitle">Un aperçu de mon parcours technique.</p>
             <div class="stats-grid">
-                <div class="stat-card">
+                <div class="stat-card reveal">
                     <div class="stat-icon">📚</div>
                     <div class="stat-number" data-target="3">0</div>
                     <div class="stat-label">Années d'études</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card reveal">
                     <div class="stat-icon">💻</div>
                     <div class="stat-number" data-target="15">0</div>
                     <div class="stat-label">Projets réalisés</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card reveal">
                     <div class="stat-icon">🚀</div>
                     <div class="stat-number" data-target="8">0</div>
                     <div class="stat-label">Technologies maîtrisées</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card reveal">
                     <div class="stat-icon">⭐</div>
                     <div class="stat-number" data-target="100">0</div>
-                    <div class="stat-label">% de satisfaction</div>
+                    <div class="stat-label">% de motivation</div>
                 </div>
             </div>
         </div>
     </section>
-    
+
     <!-- Contact Section -->
     <section id="contact" class="contact">
         <div class="container">
             <h2 class="section-title">Contactez-moi</h2>
+            <p class="section-subtitle">Un projet en tête ? Parlons-en.</p>
             <div class="contact-content">
                 <div class="contact-info">
-                    <div class="contact-item">
+                    <div class="contact-item reveal">
                         <div class="contact-icon">📧</div>
                         <div class="contact-details">
                             <h3>Email</h3>
                             <p>haibonwaborel64@gmail.com</p>
                         </div>
                     </div>
-                    <div class="contact-item">
+                    <div class="contact-item reveal">
                         <div class="contact-icon">📱</div>
                         <div class="contact-details">
                             <h3>Téléphone</h3>
                             <p>+237 691 719 824</p>
                         </div>
                     </div>
-                    <div class="contact-item">
+                    <div class="contact-item reveal">
                         <div class="contact-icon">📍</div>
                         <div class="contact-details">
                             <h3>Localisation</h3>
-                            <p>Yaounde, Cameroun</p>
+                            <p>Yaoundé, Cameroun</p>
                         </div>
                     </div>
                 </div>
-                <form class="contact-form">
+                <form class="contact-form reveal">
                     <div class="form-group">
                         <input type="text" placeholder="Votre nom" required>
                     </div>
@@ -197,7 +234,7 @@
                     <div class="form-group">
                         <textarea placeholder="Votre message" rows="5" required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Envoyer le message</button>
+                    <button type="submit" class="btn btn-primary">Envoyer le message →</button>
                 </form>
             </div>
         </div>
@@ -207,11 +244,10 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p>&copy; 2024 Portfolio - Étudiant Développeur. Tous droits réservés.</p>
+                <p>&copy; 2025 HAIBONWA RIBEGA Borel. Tous droits réservés.</p>
                 <div class="social-links">
-                    <a href="https://github.com/haibonwa-borel" class="social-link">GitHub</a>
-                    <a href="https://www.linkedin.com/in/borel-haibonwa-ribega-4a7b8735b" class="social-link">LinkedIn</a>
-                    <a href="" class="social-link">Twitter (X)</a>
+                    <a href="https://github.com/haibonwa-borel" class="social-link" target="_blank">GitHub</a>
+                    <a href="https://www.linkedin.com/in/borel-haibonwa-ribega-4a7b8735b" class="social-link" target="_blank">LinkedIn</a>
                 </div>
             </div>
         </div>
@@ -220,4 +256,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
