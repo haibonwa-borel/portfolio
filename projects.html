@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projets – HAIBONWA RIBEGA Borel</title>
     <meta name="description" content="Découvrez les projets de développement web, mobile et IA de HAIBONWA RIBEGA Borel.">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 </head>
 <body>
     <!-- Navigation -->
@@ -94,7 +95,8 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p>&copy; 2025 HAIBONWA RIBEGA Borel. Tous droits réservés.</p>
+                <p>&copy; <span id="current-year">2025</span> HAIBONWA RIBEGA Borel. Tous droits réservés.</p>
+                <script>document.getElementById('current-year').textContent = new Date().getFullYear();</script>
                 <div class="social-links">
                     <a href="https://github.com/haibonwa-borel" class="social-link" target="_blank">GitHub</a>
                     <a href="https://www.linkedin.com/in/borel-haibonwa-ribega-4a7b8735b" class="social-link" target="_blank">LinkedIn</a>

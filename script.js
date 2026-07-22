@@ -98,123 +98,240 @@ function initScrollReveal() {
     revealElements.forEach(el => observer.observe(el));
 }
 
-// ---- Three.js – Particle Network ----
+// ---- UI Background Parallax ----
+function initUIBackground() {
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+    
+    gsap.registerPlugin(ScrollTrigger);
+    
+    // Scroll parallax
+    gsap.to('.card-code', { y: -150, rotation: 5, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1 } });
+    gsap.to('.card-stats', { y: -120, rotation: -5, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1.5 } });
+    gsap.to('.card-decorative', { y: -200, scale: 1.2, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 2 } });
+
+    // Mouse hover parallax
+    const heroVisual = document.querySelector('.hero-visual');
+    if (heroVisual && window.innerWidth > 768) {
+        heroVisual.addEventListener('mousemove', (e) => {
+            const rect = heroVisual.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5;
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
+            gsap.to('.card-code', { x: x * 30, y: y * 30, duration: 1, ease: 'power2.out' });
+            gsap.to('.card-stats', { x: x * -40, y: y * -40, duration: 1, ease: 'power2.out' });
+            gsap.to('.card-decorative', { x: x * 60, y: y * 60, duration: 2, ease: 'power2.out' });
+        });
+        heroVisual.addEventListener('mouseleave', () => {
+            gsap.to('.card-code', { x: 0, y: 0, duration: 1, ease: 'power2.out' });
+            gsap.to('.card-stats', { x: 0, y: 0, duration: 1, ease: 'power2.out' });
+            gsap.to('.card-decorative', { x: 0, y: 0, duration: 1, ease: 'power2.out' });
+        });
+    }
+}
+
+// ---- Three.js & GSAP Morphing Device ----
 function initThreeJS() {
+    return; // Three.js disabled, replaced by UI background
     const container = document.getElementById('three-container');
     if (!container || typeof THREE === 'undefined') return;
 
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+    }
+
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 
-    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
     container.appendChild(renderer.domElement);
 
-    // Particle system
-    const particleCount = 200;
-    const positions = new Float32Array(particleCount * 3);
-    const velocities = [];
+    // Device Group
+    const deviceGroup = new THREE.Group();
+    scene.add(deviceGroup);
 
-    for (let i = 0; i < particleCount; i++) {
-        positions[i * 3] = (Math.random() - 0.5) * 10;
-        positions[i * 3 + 1] = (Math.random() - 0.5) * 10;
-        positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
-        velocities.push({
-            x: (Math.random() - 0.5) * 0.01,
-            y: (Math.random() - 0.5) * 0.01,
-            z: (Math.random() - 0.5) * 0.01
+    // Initial position for hero section
+    deviceGroup.position.set(3, 0, 0); 
+    deviceGroup.rotation.set(0.2, -0.4, 0);
+    
+    // Materials
+    const glassMaterial = new THREE.MeshPhysicalMaterial({
+        color: 0x000000,
+        metalness: 0.9,
+        roughness: 0.1,
+        transparent: true,
+        opacity: 0.7,
+        envMapIntensity: 1.0,
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.1
+    });
+
+    const frameMaterial = new THREE.MeshStandardMaterial({
+        color: 0x111111,
+        metalness: 0.8,
+        roughness: 0.4
+    });
+
+    const screenMaterial = new THREE.MeshBasicMaterial({
+        color: 0x00e88f,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.2
+    });
+
+    // Base (Keyboard side)
+    const baseGeo = new THREE.BoxGeometry(4, 0.15, 3);
+    const baseMesh = new THREE.Mesh(baseGeo, frameMaterial);
+    
+    // Keyboard Area
+    const kbGeo = new THREE.BoxGeometry(3.6, 0.05, 1.4);
+    const kbMesh = new THREE.Mesh(kbGeo, glassMaterial);
+    kbMesh.position.set(0, 0.1, -0.2);
+    baseMesh.add(kbMesh);
+    
+    // Trackpad
+    const trackpadGeo = new THREE.BoxGeometry(1, 0.02, 0.6);
+    const trackpadMesh = new THREE.Mesh(trackpadGeo, glassMaterial);
+    trackpadMesh.position.set(0, 0.1, 1.0);
+    baseMesh.add(trackpadMesh);
+
+    deviceGroup.add(baseMesh);
+
+    // Lid (Screen side)
+    const lidGroup = new THREE.Group();
+    // Move lid center of rotation to the back edge
+    lidGroup.position.set(0, 0.075, -1.5);
+    
+    const screenBaseGeo = new THREE.BoxGeometry(4, 3, 0.1);
+    const screenBaseMesh = new THREE.Mesh(screenBaseGeo, frameMaterial);
+    // Offset mesh so it hinges at the bottom
+    screenBaseMesh.position.set(0, 1.5, 0);
+    
+    const displayGeo = new THREE.PlaneGeometry(3.8, 2.7);
+    const displayMesh = new THREE.Mesh(displayGeo, screenMaterial);
+    displayMesh.position.set(0, 1.5, 0.06);
+    
+    lidGroup.add(screenBaseMesh);
+    lidGroup.add(displayMesh);
+    
+    // Initial open state
+    lidGroup.rotation.x = -Math.PI / 10; 
+    deviceGroup.add(lidGroup);
+
+    // Lights
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+
+    const dirLight1 = new THREE.DirectionalLight(0x00e88f, 2);
+    dirLight1.position.set(5, 5, 5);
+    scene.add(dirLight1);
+
+    const dirLight2 = new THREE.DirectionalLight(0x00b4ff, 2);
+    dirLight2.position.set(-5, -5, 5);
+    scene.add(dirLight2);
+
+    camera.position.z = 8;
+
+    // Mouse interaction for floating effect
+    let mouseX = 0, mouseY = 0;
+    
+    if (window.innerWidth > 768) {
+        document.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
         });
     }
 
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    // Morph Objects for Phone State
+    // We will animate the scales of the geometries to match a phone ratio
+    // Laptop ratio: 4 x 3. Phone ratio: 2 x 4.
+    
+    const animations = {
+        lidAngle: -Math.PI / 10,
+        baseScaleX: 1,
+        baseScaleZ: 1,
+        yPos: 0,
+        xPos: 3,
+        rotY: -0.4,
+        rotX: 0.2,
+        rotZ: 0
+    };
 
-    const material = new THREE.PointsMaterial({
-        color: 0x00e88f,
-        size: 0.05,
-        transparent: true,
-        opacity: 0.8,
-        sizeAttenuation: true
-    });
+    function updateDeviceShape() {
+        lidGroup.rotation.x = animations.lidAngle;
+        
+        // Morph scaling
+        baseMesh.scale.x = animations.baseScaleX;
+        baseMesh.scale.z = animations.baseScaleZ;
+        lidGroup.scale.x = animations.baseScaleX;
+        lidGroup.scale.y = animations.baseScaleZ; // Lid Z maps to phone Y
+        
+        deviceGroup.position.y = animations.yPos;
+        deviceGroup.position.x = animations.xPos;
+        
+        deviceGroup.rotation.y = animations.rotY;
+        deviceGroup.rotation.x = animations.rotX;
+        deviceGroup.rotation.z = animations.rotZ;
+    }
 
-    const particles = new THREE.Points(geometry, material);
-    scene.add(particles);
+    // GSAP ScrollTrigger Timeline
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: "body",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 1.5,
+            }
+        });
 
-    // Central glowing sphere
-    const sphereGeo = new THREE.SphereGeometry(0.6, 32, 32);
-    const sphereMat = new THREE.MeshBasicMaterial({
-        color: 0x00e88f,
-        transparent: true,
-        opacity: 0.15,
-        wireframe: true
-    });
-    const sphere = new THREE.Mesh(sphereGeo, sphereMat);
-    scene.add(sphere);
+        // 1. Scroll to About -> Close Lid & move to center
+        tl.to(animations, {
+            lidAngle: -Math.PI, // closed
+            xPos: 0,
+            rotY: 0,
+            rotX: 1.0, // angled to look at top of closed laptop
+            duration: 1,
+            onUpdate: updateDeviceShape
+        });
 
-    // Outer ring
-    const torusGeo = new THREE.TorusGeometry(1.5, 0.02, 16, 100);
-    const torusMat = new THREE.MeshBasicMaterial({
-        color: 0x00b4ff,
-        transparent: true,
-        opacity: 0.3
-    });
-    const torus = new THREE.Mesh(torusGeo, torusMat);
-    torus.rotation.x = Math.PI / 3;
-    scene.add(torus);
+        // 2. Scroll to Education -> Morph into Phone shape vertically
+        tl.to(animations, {
+            baseScaleX: 0.5, // Narrower
+            baseScaleZ: 1.33, // Taller (3 * 1.33 = 4)
+            rotX: 1.5, // Look flat
+            rotZ: Math.PI / 2, // Rotated to stand up as a phone
+             duration: 1,
+            onUpdate: updateDeviceShape
+        });
+        
+        // 3. Scroll to Stats/Contact -> Rotate phone
+        tl.to(animations, {
+            rotY: Math.PI * 2,
+            yPos: -1,
+            duration: 1.5,
+            onUpdate: updateDeviceShape
+        });
+    }
 
-    // Second ring
-    const torus2 = new THREE.Mesh(
-        new THREE.TorusGeometry(2.0, 0.015, 16, 100),
-        new THREE.MeshBasicMaterial({ color: 0xa855f7, transparent: true, opacity: 0.2 })
-    );
-    torus2.rotation.x = -Math.PI / 4;
-    torus2.rotation.y = Math.PI / 6;
-    scene.add(torus2);
-
-    camera.position.z = 5;
-
-    let mouseX = 0, mouseY = 0;
-    container.addEventListener('mousemove', (event) => {
-        const rect = container.getBoundingClientRect();
-        mouseX = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
-        mouseY = -((event.clientY - rect.top) / rect.height - 0.5) * 2;
-    });
-
+    // Animation Loop
     function animate() {
         requestAnimationFrame(animate);
 
-        // Update particles
-        const posArray = geometry.attributes.position.array;
-        for (let i = 0; i < particleCount; i++) {
-            posArray[i * 3] += velocities[i].x;
-            posArray[i * 3 + 1] += velocities[i].y;
-            posArray[i * 3 + 2] += velocities[i].z;
-
-            // Bounce within bounds
-            for (let j = 0; j < 3; j++) {
-                if (Math.abs(posArray[i * 3 + j]) > 5) {
-                    if (j === 0) velocities[i].x *= -1;
-                    if (j === 1) velocities[i].y *= -1;
-                    if (j === 2) velocities[i].z *= -1;
-                }
-            }
-        }
-        geometry.attributes.position.needsUpdate = true;
-
-        // Rotate objects
-        sphere.rotation.y += 0.005;
-        sphere.rotation.x += 0.003;
-        torus.rotation.z += 0.003;
-        torus2.rotation.z -= 0.002;
-        torus2.rotation.x += 0.001;
-        particles.rotation.y += 0.001;
-
-        // Mouse interaction
-        camera.position.x += (mouseX * 1.5 - camera.position.x) * 0.05;
-        camera.position.y += (mouseY * 1.5 - camera.position.y) * 0.05;
-        camera.lookAt(scene.position);
+        // Gentle floating effect
+        const time = Date.now() * 0.001;
+        const floatY = Math.sin(time) * 0.1;
+        const floatX = Math.cos(time * 0.8) * 0.05;
+        
+        // Apply scroll-driven animations + float + mouse tilt
+        updateDeviceShape();
+        
+        deviceGroup.position.y += floatY;
+        deviceGroup.position.x += floatX;
+        
+        deviceGroup.rotation.x += mouseY * 0.1;
+        deviceGroup.rotation.y += mouseX * 0.1;
 
         renderer.render(scene, camera);
     }
@@ -223,11 +340,9 @@ function initThreeJS() {
 
     // Resize
     window.addEventListener('resize', () => {
-        if (container.clientWidth > 0 && container.clientHeight > 0) {
-            camera.aspect = container.clientWidth / container.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(container.clientWidth, container.clientHeight);
-        }
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
     });
 }
 
@@ -298,9 +413,17 @@ function initActiveNavOnScroll() {
     });
 }
 
+// ---- Footer Year ----
+function updateYear() {
+    const yearElement = document.getElementById('current-year');
+    if (yearElement) {
+        yearElement.textContent = new Date().getFullYear();
+    }
+}
+
 // ---- Initialization ----
 document.addEventListener('DOMContentLoaded', function() {
-    initThreeJS();
+    initUIBackground();
     initGSAPAnimations();
     initSmoothScroll();
     initContactForm();
@@ -308,6 +431,7 @@ document.addEventListener('DOMContentLoaded', function() {
     animateCounters();
     initScrollReveal();
     initActiveNavOnScroll();
+    updateYear();
     document.body.classList.add('loaded');
 });
 
