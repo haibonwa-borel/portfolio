@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projets – HAIBONWA RIBEGA Borel</title>
-    <meta name="description" content="Découvrez les projets de développement web, mobile et IA de HAIBONWA RIBEGA Borel.">
+    <title>Projets – HAIBONWA RIBEGA Borel | Portfolio 3D</title>
+    <meta name="description" content="Découvrez les projets de développement web, mobile et IA de HAIBONWA RIBEGA Borel — récupérés en temps réel depuis GitHub.">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 </head>
 <body>
+    <!-- Custom Cursor -->
+    <div class="cursor-dot" id="cursorDot"></div>
+    <div class="cursor-halo" id="cursorHalo"></div>
+
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
@@ -17,21 +21,12 @@
                 <span class="logo-text">&lt;HB/&gt;</span>
             </div>
             <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="index.html" class="nav-link">Accueil</a>
-                </li>
-                <li class="nav-item">
-                    <a href="index.html#about" class="nav-link">À propos</a>
-                </li>
-                <li class="nav-item">
-                    <a href="index.html#stats" class="nav-link">Stats</a>
-                </li>
-                <li class="nav-item">
-                    <a href="projects.html" class="nav-link active">Projets</a>
-                </li>
-                <li class="nav-item">
-                    <a href="index.html#contact" class="nav-link">Contact</a>
-                </li>
+                <li class="nav-item"><a href="index.html" class="nav-link">Accueil</a></li>
+                <li class="nav-item"><a href="index.html#about" class="nav-link">À propos</a></li>
+                <li class="nav-item"><a href="index.html#skills-3d" class="nav-link">Compétences</a></li>
+                <li class="nav-item"><a href="index.html#stats" class="nav-link">Stats</a></li>
+                <li class="nav-item"><a href="projects.html" class="nav-link active">Projets</a></li>
+                <li class="nav-item"><a href="index.html#contact" class="nav-link">Contact</a></li>
             </ul>
             <div class="hamburger">
                 <span class="bar"></span>
@@ -44,9 +39,11 @@
     <!-- Projects Hero -->
     <section class="projects-hero">
         <div class="container">
+            <span class="section-tag">// mes réalisations</span>
             <h1 class="page-title">Mes Projets</h1>
             <p class="page-subtitle">
-                Des repositories GitHub récupérés en temps réel — web, mobile et plus encore.
+                Repositories GitHub récupérés en temps réel — web, mobile et intelligence artificielle.
+                <br><small style="color:var(--text-3);font-size:0.82rem;">Survolez une carte pour la retourner et voir les détails.</small>
             </p>
         </div>
     </section>
@@ -63,30 +60,12 @@
 
             <div class="projects-grid" id="projects-grid">
                 <!-- Skeleton loaders while fetching -->
-                <div class="skeleton-card">
-                    <div class="skeleton-image"></div>
-                    <div class="skeleton-content">
-                        <div class="skeleton-line"></div>
-                        <div class="skeleton-line"></div>
-                        <div class="skeleton-line"></div>
-                    </div>
-                </div>
-                <div class="skeleton-card">
-                    <div class="skeleton-image"></div>
-                    <div class="skeleton-content">
-                        <div class="skeleton-line"></div>
-                        <div class="skeleton-line"></div>
-                        <div class="skeleton-line"></div>
-                    </div>
-                </div>
-                <div class="skeleton-card">
-                    <div class="skeleton-image"></div>
-                    <div class="skeleton-content">
-                        <div class="skeleton-line"></div>
-                        <div class="skeleton-line"></div>
-                        <div class="skeleton-line"></div>
-                    </div>
-                </div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
             </div>
         </div>
     </section>
@@ -96,7 +75,6 @@
         <div class="container">
             <div class="footer-content">
                 <p>&copy; <span id="current-year">2025</span> HAIBONWA RIBEGA Borel. Tous droits réservés.</p>
-                <script>document.getElementById('current-year').textContent = new Date().getFullYear();</script>
                 <div class="social-links">
                     <a href="https://github.com/haibonwa-borel" class="social-link" target="_blank">GitHub</a>
                     <a href="https://www.linkedin.com/in/borel-haibonwa-ribega-4a7b8735b" class="social-link" target="_blank">LinkedIn</a>
