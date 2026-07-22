@@ -124,7 +124,7 @@ function createProjectCard(repo) {
 
   const linksHtml = `
     <div class="project-back-links">
-      <a href="${repo.html_url}" class="project-link" target="_blank" rel="noopener">GitHub</a>
+      ${repo.html_url ? `<a href="${repo.html_url}" class="project-link" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> GitHub</a>` : ""}
       ${repo.homepage ? `<a href="${repo.homepage}" class="project-link secondary" target="_blank" rel="noopener">Demo →</a>` : ""}
     </div>
   `;
@@ -173,27 +173,76 @@ async function fetchGitHubProjects() {
   const grid = document.getElementById("projects-grid");
   if (!grid) return;
 
-  try {
-    const response = await fetch(
-      `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=30`,
-      { headers: { Accept: "application/vnd.github.mercy-preview+json" } }
-    );
-    if (!response.ok) throw new Error(`GitHub API Error: ${response.status}`);
-    const fetchedRepos = await response.json();
+    // Projets locaux et privés
+    const LOCAL_PROJECTS = [
+      {
+        name: "Zevaba.com",
+        description: "Application mobile et plateforme web pour Zevaba. Interface moderne et expérience utilisateur fluide.",
+        language: "Dart",
+        topics: ["flutter", "mobile", "frontend"],
+        homepage: "https://zevaba.com",
+        stargazers_count: 0, forks_count: 0,
+        updated_at: new Date().toISOString(),
+      },
+      {
+        name: "CamerPulse",
+        description: "Application mobile (Flutter) de monitoring de l'économie informelle (Cartographie, IA, prédictions en temps réel).",
+        language: "Dart",
+        topics: ["flutter", "mobile", "ia", "data"],
+        stargazers_count: 0, forks_count: 0,
+        updated_at: new Date().toISOString(),
+      },
+      {
+        name: "EEUEZ Menu",
+        description: "Plateforme de restauration en ligne avec prise de commande et suivi de livraison GPS en temps réel.",
+        language: "Dart",
+        topics: ["flutter", "mobile", "fullstack"],
+        stargazers_count: 0, forks_count: 0,
+        updated_at: new Date().toISOString(),
+      },
+      {
+        name: "KeyceBet",
+        description: "Application de paris sportifs production-ready développée spécifiquement pour le marché camerounais.",
+        language: "JavaScript",
+        topics: ["fullstack", "web"],
+        stargazers_count: 0, forks_count: 0,
+        updated_at: new Date().toISOString(),
+      },
+      {
+        name: "The Great Firewall - 3D",
+        description: "Prototype de jeu hackathon multijoueur en 3D. Sécurisation de centres et gameplay en temps réel.",
+        language: "JavaScript",
+        topics: ["web", "game", "3d"],
+        stargazers_count: 0, forks_count: 0,
+        updated_at: new Date().toISOString(),
+      },
+      {
+        name: "Flowsint",
+        description: "Plateforme intelligente d'analyse de graphes et de flux de données (Graph analysis and intelligence).",
+        language: "TypeScript",
+        topics: ["fullstack", "data", "web"],
+        stargazers_count: 0, forks_count: 0,
+        updated_at: new Date().toISOString(),
+      }
+    ];
 
-    // Custom project: Zevaba
-    const zevabaProject = {
-      name: "Zevaba.com",
-      description: "Application mobile et plateforme web pour Zevaba, développée avec Flutter. Interface moderne et expérience utilisateur fluide.",
-      language: "Dart",
-      topics: ["flutter", "mobile", "frontend"],
-      html_url: "https://zevaba.com",
-      homepage: "https://zevaba.com",
-      stargazers_count: 0, forks_count: 0,
-      updated_at: new Date().toISOString(),
-    };
+    let repos = [...LOCAL_PROJECTS];
 
-    const repos = [zevabaProject, ...fetchedRepos];
+    try {
+      const response = await fetch(
+        `https://api.github.com/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=30`,
+        { headers: { Accept: "application/vnd.github.mercy-preview+json" } }
+      );
+      if (response.ok) {
+        const fetchedRepos = await response.json();
+        repos = [...repos, ...fetchedRepos];
+      } else {
+        console.warn("GitHub API rate limited or unavailable, showing local projects only.");
+      }
+    } catch (error) {
+      console.warn("GitHub fetch error:", error);
+    }
+
     grid.innerHTML = "";
 
     if (repos.length === 0) {
@@ -219,15 +268,6 @@ async function fetchGitHubProjects() {
       initProjectFilter();
     }, repos.length * 70 + 300);
 
-  } catch (error) {
-    console.error("GitHub fetch error:", error);
-    grid.innerHTML = `
-      <div style="grid-column:1/-1;text-align:center;color:var(--text-2);padding:4rem 0;">
-        <p style="margin-bottom:1rem;font-size:1.1rem;"><i class="fa-solid fa-triangle-exclamation"></i> Impossible de charger les projets depuis GitHub.</p>
-        <button onclick="fetchGitHubProjects()" class="filter-btn" style="cursor:pointer;margin-top:0.5rem;">Réessayer</button>
-      </div>
-    `;
-  }
 }
 
 // ---- Project filter ----
