@@ -68,10 +68,10 @@ const LANG_COLORS = {
 
 // ---- Language icon emoji ----
 const LANG_ICON = {
-  JavaScript: "⚡", TypeScript: "🔷", Python: "🐍", HTML: "🌐",
-  CSS: "🎨", Dart: "🎯", PHP: "🐘", Java: "☕", "C++": "⚙️",
-  "C#": "💎", Swift: "🦅", Kotlin: "🎭", PowerShell: "💻",
-  Shell: "🖥️",
+  JavaScript: '<i class="fa-brands fa-js"></i>', TypeScript: '<i class="fa-solid fa-file-code"></i>', Python: '<i class="fa-brands fa-python"></i>', HTML: '<i class="fa-brands fa-html5"></i>',
+  CSS: '<i class="fa-brands fa-css3-alt"></i>', Dart: '<i class="fa-solid fa-bullseye"></i>', PHP: '<i class="fa-brands fa-php"></i>', Java: '<i class="fa-brands fa-java"></i>', "C++": '<i class="fa-solid fa-c"></i>',
+  "C#": '<i class="fa-solid fa-c"></i>', Swift: '<i class="fa-brands fa-swift"></i>', Kotlin: '<i class="fa-solid fa-code"></i>', PowerShell: '<i class="fa-solid fa-terminal"></i>',
+  Shell: '<i class="fa-solid fa-terminal"></i>',
 };
 
 // ---- Category detection ----
@@ -104,7 +104,7 @@ function createProjectCard(repo) {
   const category    = getProjectCategory(repo);
   const description = repo.description || "Aucune description disponible.";
   const truncated   = description.length > 100 ? description.substring(0, 97) + "..." : description;
-  const icon        = LANG_ICON[repo.language] || "💻";
+  const icon        = LANG_ICON[repo.language] || '<i class="fa-solid fa-laptop-code"></i>';
   const langColor   = LANG_COLORS[repo.language] || "#a855f7";
 
   let tags = [];
@@ -116,8 +116,8 @@ function createProjectCard(repo) {
 
   const statsHtml = `
     <div class="project-back-stats">
-      ${repo.stargazers_count > 0 ? `<span>⭐ ${repo.stargazers_count}</span>` : ""}
-      ${repo.forks_count > 0     ? `<span>🔀 ${repo.forks_count}</span>` : ""}
+      ${repo.stargazers_count > 0 ? `<span><i class="fa-solid fa-star"></i> ${repo.stargazers_count}</span>` : ""}
+      ${repo.forks_count > 0     ? `<span><i class="fa-solid fa-code-branch"></i> ${repo.forks_count}</span>` : ""}
       <span>${new Date(repo.updated_at).toLocaleDateString("fr-FR", { month: "short", year: "numeric" })}</span>
     </div>
   `;
@@ -223,7 +223,7 @@ async function fetchGitHubProjects() {
     console.error("GitHub fetch error:", error);
     grid.innerHTML = `
       <div style="grid-column:1/-1;text-align:center;color:var(--text-2);padding:4rem 0;">
-        <p style="margin-bottom:1rem;font-size:1.1rem;">⚠️ Impossible de charger les projets depuis GitHub.</p>
+        <p style="margin-bottom:1rem;font-size:1.1rem;"><i class="fa-solid fa-triangle-exclamation"></i> Impossible de charger les projets depuis GitHub.</p>
         <button onclick="fetchGitHubProjects()" class="filter-btn" style="cursor:pointer;margin-top:0.5rem;">Réessayer</button>
       </div>
     `;
