@@ -11,13 +11,25 @@ document.addEventListener('DOMContentLoaded', function () {
     hamburger.addEventListener('click', function () {
       hamburger.classList.toggle('active');
       navMenu.classList.toggle('active');
+      document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
     });
     document.querySelectorAll('.nav-link').forEach(n =>
       n.addEventListener('click', () => {
         hamburger.classList.remove('active');
         navMenu.classList.remove('active');
+        document.body.style.overflow = '';
       })
     );
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (navMenu.classList.contains('active') &&
+          !navMenu.contains(e.target) &&
+          !hamburger.contains(e.target)) {
+        hamburger.classList.remove('active');
+        navMenu.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
   }
 });
 
@@ -549,6 +561,9 @@ function initCardTilt() {
 // INITIALIZATION
 // ============================================
 document.addEventListener('DOMContentLoaded', function () {
+  const isMobile = window.innerWidth <= 768;
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   initCustomCursor();
   initGSAPAnimations();
   initSmoothScroll();
@@ -558,13 +573,20 @@ document.addEventListener('DOMContentLoaded', function () {
   initScrollReveal();
   initActiveNavOnScroll();
   updateYear();
-  initScrollParallax();
 
-  // Init Three.js scenes after a short delay to let layout stabilize
+  if (!prefersReducedMotion) {
+    initScrollParallax();
+  }
+
+  // Init Three.js scenes (skip on very small/low-end devices)
   setTimeout(() => {
-    initHeroThreeJS();
+    if (!isMobile || window.innerWidth > 480) {
+      initHeroThreeJS();
+    }
     initSkillsThreeJS();
-    initCardTilt();
+    if (!isMobile) {
+      initCardTilt();
+    }
   }, 100);
 
   document.body.classList.add('loaded');

@@ -9,6 +9,8 @@ const GITHUB_USERNAME = "haibonwa-borel";
   const dot  = document.getElementById('cursorDot');
   const halo = document.getElementById('cursorHalo');
   if (!dot || !halo) return;
+  // Skip on touch devices
+  if (window.matchMedia('(hover: none)').matches) return;
   let mouseX = 0, mouseY = 0, haloX = 0, haloY = 0;
   document.addEventListener('mousemove', e => {
     mouseX = e.clientX; mouseY = e.clientY;
@@ -34,13 +36,25 @@ document.addEventListener("DOMContentLoaded", function () {
     hamburger.addEventListener("click", function () {
       hamburger.classList.toggle("active");
       navMenu.classList.toggle("active");
+      document.body.style.overflow = navMenu.classList.contains("active") ? "hidden" : "";
     });
     document.querySelectorAll(".nav-link").forEach(n =>
       n.addEventListener("click", () => {
         hamburger.classList.remove("active");
         navMenu.classList.remove("active");
+        document.body.style.overflow = "";
       })
     );
+    // Close on outside tap
+    document.addEventListener("click", (e) => {
+      if (navMenu.classList.contains("active") &&
+          !navMenu.contains(e.target) &&
+          !hamburger.contains(e.target)) {
+        hamburger.classList.remove("active");
+        navMenu.classList.remove("active");
+        document.body.style.overflow = "";
+      }
+    });
   }
   document.getElementById('current-year').textContent = new Date().getFullYear();
 });
@@ -262,6 +276,17 @@ async function fetchGitHubProjects() {
         card.style.transform  = "translateY(0) scale(1)";
       }, index * 70);
     });
+
+    // Tap-to-flip on touch/mobile devices
+    if (window.matchMedia('(hover: none), (pointer: coarse)').matches) {
+      setTimeout(() => {
+        document.querySelectorAll('.project-card').forEach(card => {
+          card.addEventListener('click', function () {
+            this.classList.toggle('flipped');
+          });
+        });
+      }, repos.length * 70 + 400);
+    }
 
     // Init filters after loading
     setTimeout(() => {
